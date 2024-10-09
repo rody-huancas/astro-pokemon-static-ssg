@@ -6,35 +6,40 @@ import MainLayout from "@layouts/MainLayout.astro";
 import PokemonCard from "@components/pokemons/PokemonCard.astro";
 
 export const getStaticPaths = (async () => {
-    const resp = await fetch("https://pokeapi.co/api/v2/pokemon?limit=151");
-    const { results } = (await resp.json()) as PokemonListResponse;
+  const resp = await fetch("https://pokeapi.co/api/v2/pokemon?limit=151");
+  const { results } = (await resp.json()) as PokemonListResponse;
 
-    return results.map(({name, url}) => ({
-        params: { name: name },
-        props : { name: name, url: url }
-    }))
+  return results.map(({ name, url }) => ({
+    params: { name: name },
+    props: { name: name, url: url },
+  }));
 }) satisfies GetStaticPaths;
 
 const { name } = Astro.params;
 const { url } = Astro.props;
 
 const id = url.split("/").at(-2);
-const audioSrc = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`
-
+const audioSrc = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`;
+const imageSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
 ---
 
-<MainLayout title="Pokemón">
-    <section class="mt-10 mx-10 flex flex-col justify-center items-center">
-        <div>
-            <a href="/">Regresar</a>
-            <h1 class="text-3xl">{name}</h1>
-@        </div>
+<MainLayout
+  title=`Pokemón - #${id} ${name}`
+  description=`Información sobre el pokemón ${name}`
+  image={imageSrc}
+>
+  <section class="mt-10 mx-10 flex flex-col justify-center items-center">
+    <div>
+      <a href="/">Regresar</a>
+      <h1 class="text-3xl">{name}</h1>
+      @
+    </div>
 
-        <PokemonCard name={name} url={url} isBig />
+    <PokemonCard name={name} url={url} isBig />
 
-        <audio controls class="mt-5">
-            <source src={audioSrc} type="audio/ogg" />
-            Tu navegador no soporta el elemento del audio.
-        </audio>
-    </section>
+    <audio controls class="mt-5">
+      <source src={audioSrc} type="audio/ogg" />
+      Tu navegador no soporta el elemento del audio.
+    </audio>
+  </section>
 </MainLayout>
